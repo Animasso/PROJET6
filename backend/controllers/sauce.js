@@ -12,7 +12,7 @@ exports.createSauce = (req, res, next) => {
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
       likes:0,
       dislikes:0,
-      usersLiked:[],
+      usersLiked:[], 
       usersDisliked:[],
     }); 
     sauce.save()
@@ -104,21 +104,48 @@ exports.likesDislikesSauce = (req, res, next) =>{
     .catch((error) => res.status(400).json({
       message:'Une erreur est survenu'
     }))
+  }else{
+    Sauce.findOne({_id: req.params.id}) 
+    .then(
+      (sauce)=>{
+        if (sauce.usersDisliked.find(userId=>userId===req.body.userId)){
+          Sauce.updateOne(
+            {_id: sauceId},
+            {
+              $inc:{dislikes: -1},
+              $pull:{usersDisliked:userId}
+            }
+          )
+          .then(() => res.status(200).json({
+            message:'Votre choix est prit en compte'
+          }))
+          .catch((error) => res.status(400).json({
+            message:'Une erreur est survenu'
+          }))
+        }else{
+          Sauce.updateOne(
+            {_id:sauceId},
+            {
+              $inc:{likes: -1},
+              $pull:{ usersLiked:userId}
+            }
+            )
+            .then(() => res.status(200).json({
+              message:'Votre choix est prit en compte'
+            }))
+            .catch((error) => res.status(400).json({
+              message:'Une erreur est survenu'
+            }))
+          
+        }
+      }
+    )
   }
-  /* if(like=== 0){
-    Sauce.updateOne({
-      _id: sauceId
-    },{
-      $push: {
-        usersLiked: userId
-      },
-      $inc:{
-        likes:+1
-      },
-    })
-    .then(() => res.status(200).json({
-      message:'Vous aimez !!'
-    }))
+
+
+
+
+/*
     .catch((error) => res.status(400).json({
       message:'Une erreur est survenu'
     }))
