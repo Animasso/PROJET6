@@ -6,7 +6,9 @@ const mongoose = require('mongoose');
 const path = require('path');
  //protege contre l'injection d'opérateur mongoDB
 const mongoSanitize =require('express-mongo-sanitize');
+
 const rateLimit = require("express-rate-limit");
+//met les valeurs de donnée importante dans un fichier .env pour les cacher
 require("dotenv").config();
 //configure de manière appropriée des en-têtes HTTP pour protéger de certaines vulnérabilités
 const helmet = require('helmet')

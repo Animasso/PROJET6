@@ -69,6 +69,12 @@ exports.likesDislikesSauce = (req, res, next) =>{
   let userId=req.body.userId;
   let sauceId=req.params.id;
 
+
+//Gestion des likes,dislikes
+
+/*Quand un utilisateur like une sauce on met à jour grace au id la sauce sélectionnnée
+on push id de l'utilisateur dans le tableau usersliked et on incrémente de 1 les likes
+*/
   if(like===1){
     Sauce.updateOne({
       _id: sauceId
@@ -87,6 +93,10 @@ exports.likesDislikesSauce = (req, res, next) =>{
       message:'Une erreur est survenu'
     }))
   }
+
+/*Quand un utilisateur dislike une sauce on met à jour grace au id la sauce sélectionnnée
+on push id de l'utilisateur dans le tableau usersliked et on incrémente de 1 les dislikes
+*/
   if(like=== -1){
     Sauce.updateOne({
       _id: sauceId
@@ -104,17 +114,37 @@ exports.likesDislikesSauce = (req, res, next) =>{
     .catch((error) => res.status(400).json({
       message:'Une erreur est survenu'
     }))
+
+
+//Autre cas lorsqu'on le veut enlever un like ou un dislike présent
+
+//1 cas pour supprimer le dislike 
   }else{
-    Sauce.findOne({_id: req.params.id}) 
-    .then(
-      (sauce)=>{
-        if (sauce.usersDisliked.find(userId=>userId===req.body.userId)){
-          Sauce.updateOne(
-            {_id: sauceId},
-            {
-              $inc:{dislikes: -1},
-              $pull:{usersDisliked:userId}
-            }
+  Sauce.findOne({_id: req.params.id}) 
+  .then(
+    (sauce)=>{
+      if (sauce.usersDisliked.find(userId=>userId===req.body.userId)){
+        Sauce.updateOne(
+          {_id: sauceId},
+          {
+            $inc:{dislikes: -1},
+            $pull:{usersDisliked:userId}
+          }
+        )
+        .then(() => res.status(200).json({
+          message:'Votre choix est prit en compte'
+        }))
+        .catch((error) => res.status(400).json({
+          message:'Une erreur est survenu'
+        }))
+        //pour supprimer le likes
+      }else{
+        Sauce.updateOne(
+          {_id:sauceId},
+          {
+            $inc:{likes: -1},
+            $pull:{ usersLiked:userId}
+          }
           )
           .then(() => res.status(200).json({
             message:'Votre choix est prit en compte'
@@ -122,34 +152,10 @@ exports.likesDislikesSauce = (req, res, next) =>{
           .catch((error) => res.status(400).json({
             message:'Une erreur est survenu'
           }))
-        }else{
-          Sauce.updateOne(
-            {_id:sauceId},
-            {
-              $inc:{likes: -1},
-              $pull:{ usersLiked:userId}
-            }
-            )
-            .then(() => res.status(200).json({
-              message:'Votre choix est prit en compte'
-            }))
-            .catch((error) => res.status(400).json({
-              message:'Une erreur est survenu'
-            }))
-          
-        }
+        
       }
-    )
-  }
-
-
-
-
-/*
-    .catch((error) => res.status(400).json({
-      message:'Une erreur est survenu'
-    }))
-  }
-*/
-
+    }
+  )
 }
+
+  }

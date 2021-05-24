@@ -1,11 +1,10 @@
 const bcrypt =require('bcrypt');
 const User = require('../models/user')
 const jwt = require('jsonwebtoken');
-const CryptoJS = require("crypto-js");
+const cryptojs = require("crypto-js");
 
 exports.signup = (req, res, next) => {
-const emailCrypt = CryptoJS.AES.encrypt(req.body.email, 'secret key 123').toString();
-
+const emailCrypt = cryptojs.HmacSHA256(req.body.email, 'secret key 123').toString();
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
@@ -21,8 +20,7 @@ const emailCrypt = CryptoJS.AES.encrypt(req.body.email, 'secret key 123').toStri
 };
 
 exports.login = (req, res, next) => {
-  const emailCrypt = CryptoJS.AES.encrypt(req.body.email, 'secret key 123').toString();
-
+const emailCrypt = cryptojs.HmacSHA256(req.body.email, 'secret key 123').toString();
     User.findOne({ email: emailCrypt })
     .then(user => {
       if (!user) {
@@ -34,7 +32,7 @@ exports.login = (req, res, next) => {
             return res.status(401).json({ error: 'Mot de passe incorrect !' });
           }
           res.status(200).json({
-            userId: user._id,
+            userId: user._id, 
             token: jwt.sign(
                 { userId: user._id },
                 'RANDOM_TOKEN_SECRET',
