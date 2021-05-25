@@ -22,7 +22,7 @@ exports.createSauce = (req, res, next) => {
 
 exports.getOneSauce =  (req, res, next) => {
     //mettre les 2 points pour etre accesible en tant que parametre
-    //findone pour trouver le thing parmis les things
+    //findone pour trouver la sauce parmis les sauces
   Sauce.findOne({ _id: req.params.id })
   //le Sauce est retourne en tant que promise  dans le frontend
     .then(sauce=> res.status(200).json(sauce))
