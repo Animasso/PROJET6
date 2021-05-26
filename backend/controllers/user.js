@@ -2,9 +2,26 @@ const bcrypt =require('bcrypt');
 const User = require('../models/user')
 const jwt = require('jsonwebtoken');
 const cryptojs = require("crypto-js");
+const mailValidator = require('email-validator');
+var passwordValidator = require('password-validator');
 
+
+
+var schema = new passwordValidator();
+schema
+.is().min(8)                                    
+.is().max(100)                                  
+.has().uppercase()                              
+.has().lowercase()                              
+.has().digits(2)                                
+.has().not().spaces()                           
+.is().not().oneOf(['Passw0rd', 'Password123']); 
+ 
 exports.signup = (req, res, next) => {
 const emailCrypt = cryptojs.HmacSHA256(req.body.email, 'secret key 123').toString();
+if (!mailValidator.validate(req.body.email) || (!schema.validate(req.body.password))) {  
+  throw { error: " invalide !" }  
+} else if (mailValidator.validate(req.body.email) && (schema.validate(req.body.password)))
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({

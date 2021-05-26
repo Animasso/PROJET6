@@ -1,7 +1,6 @@
 const Sauce = require('../models/Sauce');
 //fs package qui donne accès aux fonctions qui nous permettent de modifier le système de fichiers
 const fs = require('fs'); 
-
 exports.createSauce = (req, res, next) => {
     //pour extraire l objet json de sauce
     const sauceObject = JSON.parse(req.body.sauce);
@@ -40,7 +39,7 @@ exports.modifySauce = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 }
 
-    //deleteOne pour supprimer l'objet il prend en parametre id 
+//deleteOne pour supprimer l'objet il prend en parametre id 
 exports.deleteSauce = (req, res, next) => {
 // nous utilisons l'ID que nous recevons comme paramètre pour accéder au Sauce correspondant dans la base de données 
         Sauce.findOne({ _id: req.params.id })
@@ -55,14 +54,14 @@ exports.deleteSauce = (req, res, next) => {
             });
           })
           .catch(error => res.status(500).json({ error }));
-      };
+};
   
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
     .then(sauces => res.status(200).json(sauces))
     .catch(error => res.status(400).json({ error }));
-  }
+}
 
 exports.likesDislikesSauce = (req, res, next) =>{
   let like=req.body.like;
@@ -152,10 +151,7 @@ on push id de l'utilisateur dans le tableau usersliked et on incrémente de 1 le
           .catch((error) => res.status(400).json({
             message:'Une erreur est survenu'
           }))
-        
       }
     }
-  )
+  )}
 }
-
-  }
